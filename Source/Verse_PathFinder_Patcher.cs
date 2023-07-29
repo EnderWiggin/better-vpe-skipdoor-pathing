@@ -133,6 +133,7 @@ static class Verse_PathFinder_FindPath_Patch
             {
                 new CodeInstruction(OpCodes.Ldarg_0),
                 new CodeInstruction(OpCodes.Ldarg_2),
+                new CodeInstruction(OpCodes.Ldarg_3),
                 loadIndex4
             });
         }
@@ -140,10 +141,43 @@ static class Verse_PathFinder_FindPath_Patch
         return codes;
     }
 
+    private static bool CanUseTeleporters(Pawn pawn, LocalTargetInfo dest)
+    {
+        if (pawn == null)
+        {
+            return false;
+        }
+
+        if (pawn.InMentalState)
+        {
+            return false;
+        }
+
+        var curJobDef = pawn.CurJob?.def;
+        if (curJobDef == JobDefOf.Wait_Wander
+            || curJobDef == JobDefOf.GotoWander)
+        {
+            return false;
+        }
+
+        return pawn.def.race.intelligence switch
+        {
+            Intelligence.Humanlike => true,
+            Intelligence.ToolUser => true,
+            Intelligence.Animal => curJobDef == JobDefOf.FollowRoper && dest.HasThing,
+            _ => true
+        };
+    }
+
     public static void TryAddTeleporterNodes(PathFinder pathfinder, IntVec3 start, LocalTargetInfo dest,
         TraverseParms traverseParms, PathFinderCostTuning tuning, int curIndex, bool usedRegionHeuristics,
         ref int openedNodes)
     {
+        if (!CanUseTeleporters(traverseParms.pawn, dest))
+        {
+            return;
+        }
+
         var p = GetParams(pathfinder, start, dest, traverseParms);
 
         AddTeleporterNodes(pathfinder, start, dest, traverseParms, tuning, curIndex, usedRegionHeuristics,
@@ -188,7 +222,11 @@ static class Verse_PathFinder_FindPath_Patch
             return pathfindingParams;
         }
 
-        pathfindingParams = new PathfindingParams();
+        pathfindingParams = new PathfindingParams
+        {
+            pawn = traverseParms.pawn
+        };
+        
         if (pathfindingParams.pawn != null)
         {
             pathfindingParams.ticksPerMoveCardinal = pathfindingParams.pawn.TicksPerMoveCardinal;
@@ -208,7 +246,6 @@ static class Verse_PathFinder_FindPath_Patch
             .Select(x => indices.CellToIndex(x.Position))
             .ToList();
 
-        pathfindingParams.pawn = traverseParms.pawn;
         pathfindingParams.allowedArea = pathfinder.GetAllowedArea(pathfindingParams.pawn);
         pathfindingParams.avoidGrid = traverseParms.alwaysUseAvoidGrid
             ? pathfinder.map.avoidGrid.Grid
@@ -219,10 +256,15 @@ static class Verse_PathFinder_FindPath_Patch
         return pathfindingParams;
     }
 
-    private static int Heuristics(int dx, int dz, int cardinal, int diagonal, PathFinder pathfinder, LocalTargetInfo dest, int cellIndex)
+    private static int Heuristics(int dx, int dz, int cardinal, int diagonal, PathFinder pathfinder,
+        LocalTargetInfo dest, TraverseParms traverseParms, int cellIndex)
     {
-        InitTeleporters(pathfinder.map, dest.Cell, cardinal, diagonal);
         var octileDistance = GenMath.OctileDistance(dx, dz, cardinal, diagonal);
+        if (!CanUseTeleporters(traverseParms.pawn, dest))
+        {
+            return octileDistance;
+        }
+        InitTeleporters(pathfinder.map, dest.Cell, cardinal, diagonal);
         var gateToCell = GetOctileDistanceToClosestTeleport(pathfinder.map.cellIndices.IndexToCell(cellIndex), cardinal, diagonal);
         return Math.Min(octileDistance, gateToCell + octileDistanceFromDestToTeleport);
     }
