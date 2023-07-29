@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
 using HarmonyLib;
+using JetBrains.Annotations;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -10,25 +12,32 @@ using VFECore;
 
 namespace BetterVPESkipdoorPathing;
 
+[UsedImplicitly]
 [HarmonyPatch(typeof(PathFinder), nameof(PathFinder.FindPath), typeof(IntVec3), typeof(LocalTargetInfo),
     typeof(TraverseParms), typeof(PathEndMode), typeof(PathFinderCostTuning))]
 static class Verse_PathFinder_FindPath_Patch
 {
+    [UsedImplicitly]
     static void Postfix()
     {
         //clean params, so new will be created on next call
         pathfindingParams = null;
+        teleporters = null;
+        octileDistanceFromDestToTeleport = -1;
     }
 
+    [UsedImplicitly]
     static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
     {
         CodeInstruction loadCurIndex = null;
         CodeInstruction loadUsedHeuristics = null;
         CodeInstruction loadX2 = null;
+        CodeInstruction loadIndex4 = null;
 
         var fld_parentIndex = AccessTools.Field(typeof(PathFinder.PathFinderNodeFast),
             nameof(PathFinder.PathFinderNodeFast.parentIndex));
         var mtd_FinalizedPath = AccessTools.Method(typeof(PathFinder), nameof(PathFinder.FinalizedPath));
+        var mtd_OctileDistance = AccessTools.Method(typeof(GenMath), nameof(GenMath.OctileDistance));
         var fld_costNodeCost = AccessTools.Field(typeof(PathFinder.PathFinderNodeFast),
             nameof(PathFinder.PathFinderNodeFast.costNodeCost));
         var fld_status = AccessTools.Field(typeof(PathFinder.PathFinderNodeFast),
@@ -36,8 +45,8 @@ static class Verse_PathFinder_FindPath_Patch
         var fld_calcGrid = AccessTools.Field(typeof(PathFinder), nameof(PathFinder.calcGrid));
         var fld_statusClosedValue = AccessTools.Field(typeof(PathFinder), nameof(PathFinder.statusClosedValue));
 
-        var ran = false;
         var insertIndex = -1;
+        var octileIndex = -1;
 
         var codes = instructions.ToList();
 
@@ -68,6 +77,12 @@ static class Verse_PathFinder_FindPath_Patch
                 loadX2 = new CodeInstruction(OpCodes.Ldloca_S, next.operand);
             }
 
+            // add our code before this
+            // ldsfld       valuetype Verse.AI.PathFinder/PathFinderNodeFast[] Verse.AI.PathFinder::calcGrid
+            // ldloc.3      // curIndex
+            // ldelema      Verse.AI.PathFinder/PathFinderNodeFast
+            // ldsfld       unsigned int16 Verse.AI.PathFinder::statusClosedValue
+            // stfld        unsigned int16 Verse.AI.PathFinder/PathFinderNodeFast::status
             if (code.LoadsField(fld_calcGrid)
                 && codes.Count - i > 5
                 && codes[i + 1].IsLdloc()
@@ -76,15 +91,20 @@ static class Verse_PathFinder_FindPath_Patch
             {
                 insertIndex = i;
             }
+
+            if (code.Calls(mtd_OctileDistance))
+            {
+                octileIndex = i;
+                loadIndex4 = new CodeInstruction(codes[i + 3]);
+            }
         }
 
         if (insertIndex < 0)
         {
-            Log.Error($"couldn't find insert position");
+            Log.Error("[Better VPE Skipdoor pathing] couldn't find insert position");
         }
         else
         {
-            ran = true;
             var method = AccessTools.Method(typeof(Verse_PathFinder_FindPath_Patch), nameof(TryAddTeleporterNodes));
 
             codes.InsertRange(insertIndex, new[]
@@ -101,17 +121,21 @@ static class Verse_PathFinder_FindPath_Patch
             });
         }
 
-        // add our code before this
-        // ldsfld       valuetype Verse.AI.PathFinder/PathFinderNodeFast[] Verse.AI.PathFinder::calcGrid
-        // ldloc.3      // curIndex
-        // ldelema      Verse.AI.PathFinder/PathFinderNodeFast
-        // ldsfld       unsigned int16 Verse.AI.PathFinder::statusClosedValue
-        // stfld        unsigned int16 Verse.AI.PathFinder/PathFinderNodeFast::status
-
-
-        if (!ran)
-            Log.Warning(
-                "[Clean Pathfinding] Transpiler could not find target. There may be a mod conflict, or RimWorld updated?");
+        if (octileIndex < 0)
+        {
+            Log.Error("[Better VPE Skipdoor pathing] couldn't find OctileDistance position");
+        }
+        else
+        {
+            var heur = AccessTools.Method(typeof(Verse_PathFinder_FindPath_Patch), nameof(Heuristics));
+            codes[octileIndex] = new CodeInstruction(OpCodes.Call, heur);
+            codes.InsertRange(octileIndex, new[]
+            {
+                new CodeInstruction(OpCodes.Ldarg_0),
+                new CodeInstruction(OpCodes.Ldarg_2),
+                loadIndex4
+            });
+        }
 
         return codes;
     }
@@ -138,7 +162,23 @@ static class Verse_PathFinder_FindPath_Patch
         public Area allowedArea;
     }
 
+    private static List<DoorTeleporter> teleporters;
+    private static int octileDistanceFromDestToTeleport = -1;
     private static PathfindingParams pathfindingParams;
+
+    private static void InitTeleporters(Map map, IntVec3 dest, int cardinal, int diagonal)
+    {
+        if (teleporters != null)
+        {
+            return;
+        }
+        
+        teleporters = WorldComponent_DoorTeleporterManager.Instance.DoorTeleporters
+            .Where(x => x is {Spawned: true} && x.Map == map)
+            .ToList();
+        
+        octileDistanceFromDestToTeleport = GetOctileDistanceToClosestTeleport(dest, cardinal, diagonal);
+    }
 
     private static PathfindingParams GetParams(PathFinder pathfinder, IntVec3 start, LocalTargetInfo dest,
         TraverseParms traverseParms)
@@ -149,11 +189,22 @@ static class Verse_PathFinder_FindPath_Patch
         }
 
         pathfindingParams = new PathfindingParams();
+        if (pathfindingParams.pawn != null)
+        {
+            pathfindingParams.ticksPerMoveCardinal = pathfindingParams.pawn.TicksPerMoveCardinal;
+            pathfindingParams.ticksPerMoveDiagonal = pathfindingParams.pawn.TicksPerMoveDiagonal;
+        }
+        else
+        {
+            pathfindingParams.ticksPerMoveCardinal = PathFinder.DefaultMoveTicksCardinal;
+            pathfindingParams.ticksPerMoveDiagonal = PathFinder.DefaultMoveTicksDiagonal;
+        }
+        
+        InitTeleporters(pathfinder.map, dest.Cell, pathfindingParams.ticksPerMoveCardinal, pathfindingParams.ticksPerMoveDiagonal);
 
         var indices = pathfinder.map.cellIndices;
 
-        pathfindingParams.teleports = WorldComponent_DoorTeleporterManager.Instance.DoorTeleporters
-            .Where(x => x is {Spawned: true} && x.Map == pathfinder.map)
+        pathfindingParams.teleports = teleporters
             .Select(x => indices.CellToIndex(x.Position))
             .ToList();
 
@@ -165,18 +216,28 @@ static class Verse_PathFinder_FindPath_Patch
         pathfindingParams.heuristicStrength =
             pathfinder.DetermineHeuristicStrength(pathfindingParams.pawn, start, dest);
 
-        if (pathfindingParams.pawn != null)
+        return pathfindingParams;
+    }
+
+    private static int Heuristics(int dx, int dz, int cardinal, int diagonal, PathFinder pathfinder, LocalTargetInfo dest, int cellIndex)
+    {
+        InitTeleporters(pathfinder.map, dest.Cell, cardinal, diagonal);
+        var octileDistance = GenMath.OctileDistance(dx, dz, cardinal, diagonal);
+        var gateToCell = GetOctileDistanceToClosestTeleport(pathfinder.map.cellIndices.IndexToCell(cellIndex), cardinal, diagonal);
+        return Math.Min(octileDistance, gateToCell + octileDistanceFromDestToTeleport);
+    }
+
+    private static int GetOctileDistanceToClosestTeleport(IntVec3 cell, int cardinal, int diagonal)
+    {
+        if (teleporters.NullOrEmpty())
         {
-            pathfindingParams.ticksPerMoveCardinal = pathfindingParams.pawn.TicksPerMoveCardinal;
-            pathfindingParams.ticksPerMoveDiagonal = pathfindingParams.pawn.TicksPerMoveDiagonal;
-        }
-        else
-        {
-            pathfindingParams.ticksPerMoveCardinal = PathFinder.DefaultMoveTicksCardinal;
-            pathfindingParams.ticksPerMoveDiagonal = PathFinder.DefaultMoveTicksDiagonal;
+            return int.MaxValue;
         }
 
-        return pathfindingParams;
+        return teleporters
+            .Select(x => x.Position)
+            .Select(p => GenMath.OctileDistance(Math.Abs(p.x - cell.x), Math.Abs(p.z - cell.z), cardinal, diagonal))
+            .Min();
     }
 
     private static void AddTeleporterNodes(PathFinder pathfinder, IntVec3 start, LocalTargetInfo dest,
@@ -271,9 +332,10 @@ static class Verse_PathFinder_FindPath_Patch
             else if (status != PathFinder.statusClosedValue &&
                      status != PathFinder.statusOpenValue)
             {
-                var num17 = GenMath.OctileDistance(1, 0, ticksPerMoveCardinal, ticksPerMoveDiagonal);
-                PathFinder.calcGrid[index].heuristicCost =
-                    Mathf.RoundToInt(num17 * heuristicStrength);
+                var newCell = pathfinder.map.cellIndices.IndexToCell(index);
+                var num17 = GenMath.OctileDistance(Math.Abs(dest.Cell.x - newCell.x), Math.Abs(dest.Cell.z - newCell.z),
+                    ticksPerMoveCardinal, ticksPerMoveDiagonal);
+                PathFinder.calcGrid[index].heuristicCost = Mathf.RoundToInt(num17 * heuristicStrength);
             }
 
             var priority2 = num15 + PathFinder.calcGrid[index].heuristicCost;
