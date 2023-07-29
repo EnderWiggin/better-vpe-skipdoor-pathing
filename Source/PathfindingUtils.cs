@@ -11,6 +11,19 @@ namespace BetterVPESkipdoorPathing;
 
 public static class PathfindingUtils
 {
+    private static readonly JobDef[] NoTeleportJobs =
+    {
+        JobDefOf.GotoWander,
+        JobDefOf.Wait_Wander,
+    };
+
+    private static readonly JobDef[] FollowJobs =
+    {
+        JobDefOf.FollowRoper,
+        JobDefOf.Follow,
+        JobDefOf.FollowClose,
+    };
+    
     private class PathfindingParams
     {
         public List<int> teleports;
@@ -95,8 +108,7 @@ public static class PathfindingUtils
         }
 
         var curJobDef = pawn.CurJob?.def;
-        if (curJobDef == JobDefOf.Wait_Wander
-            || curJobDef == JobDefOf.GotoWander)
+        if (NoTeleportJobs.Contains(curJobDef))
         {
             return false;
         }
@@ -105,7 +117,7 @@ public static class PathfindingUtils
         {
             Intelligence.Humanlike => true,
             Intelligence.ToolUser => true,
-            Intelligence.Animal => curJobDef == JobDefOf.FollowRoper && dest.HasThing,
+            Intelligence.Animal => FollowJobs.Contains(curJobDef) && dest.HasThing,
             _ => true
         };
     }
