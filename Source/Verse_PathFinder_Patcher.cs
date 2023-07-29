@@ -267,16 +267,20 @@ static class Verse_PathFinder_FindPath_Patch
             var pathCost = ticksPerMoveCardinal;
 
             if (avoidGrid != null)
+            {
                 pathCost += avoidGrid[index] * 8;
+            }
+
             if (allowedArea != null && !allowedArea[index])
+            {
                 pathCost += PathFinder.Cost_OutsideAllowedArea;
+            }
 
 
             var b = pathfinder.edificeGrid[index];
             if (b != null)
             {
-                var buildingCost =
-                    PathFinder.GetBuildingCost(b, traverseParms, pawn, tuning);
+                var buildingCost = PathFinder.GetBuildingCost(b, traverseParms, pawn, tuning);
                 if (buildingCost == int.MaxValue)
                 {
                     continue;
@@ -304,22 +308,24 @@ static class Verse_PathFinder_FindPath_Patch
 
             var num15 = pathCost + PathFinder.calcGrid[curIndex].knownCost;
             var status = PathFinder.calcGrid[index].status;
-            if (status == PathFinder.statusClosedValue ||
-                status == PathFinder.statusOpenValue)
+            if (status == PathFinder.statusClosedValue || status == PathFinder.statusOpenValue)
             {
                 var num16 = 0;
                 if (status == PathFinder.statusClosedValue)
+                {
                     num16 = ticksPerMoveCardinal;
+                }
+
                 if (PathFinder.calcGrid[index].knownCost <= num15 + num16)
+                {
                     continue;
+                }
             }
 
             if (usedRegionHeuristics)
             {
-                PathFinder.calcGrid[index].heuristicCost =
-                    Mathf.RoundToInt(
-                        pathfinder.regionCostCalculator.GetPathCostFromDestToRegion(
-                            index) *
+                PathFinder.calcGrid[index].heuristicCost = Mathf.RoundToInt(
+                        pathfinder.regionCostCalculator.GetPathCostFromDestToRegion(index) *
                         PathFinder.RegionHeuristicWeightByNodesOpened.Evaluate(openedNodes));
                 if (PathFinder.calcGrid[index].heuristicCost < 0)
                 {
@@ -329,8 +335,7 @@ static class Verse_PathFinder_FindPath_Patch
                     PathFinder.calcGrid[index].heuristicCost = 0;
                 }
             }
-            else if (status != PathFinder.statusClosedValue &&
-                     status != PathFinder.statusOpenValue)
+            else if (status != PathFinder.statusClosedValue && status != PathFinder.statusOpenValue)
             {
                 var newCell = pathfinder.map.cellIndices.IndexToCell(index);
                 var num17 = GenMath.OctileDistance(Math.Abs(dest.Cell.x - newCell.x), Math.Abs(dest.Cell.z - newCell.z),
