@@ -1,0 +1,8 @@
+# Better VPE Skipdoor Pathing
+[Steam Workshop link](https://steamcommunity.com/sharedfiles/filedetails/?id=3011764218)
+## Description
+This mod allows pawns to 'use' Skipdoors from [Vanilla Psycasts Expanded](https://steamcommunity.com/sharedfiles/filedetails/?id=2842502659) while moving and doing stuff. They consider all tiles with skipdoors on them to be adjacent for pathing purposes. Only pawns with intellect of `Humanlike` or `ToolUser` can use skipdoors freely, but not during mental states or when wandering. Pawns with `Animal` intellect can use skipdoors only if they are following another pawn (being roped or pet following master). Notre that enemies can use skipdoors same way your colonists can, so use with caution. Also, for performance reasons if spot is un-reachable without skipdoor pawns won't path to it.
+## Difference from [VPE Skipdoor Pathing](https://steamcommunity.com/sharedfiles/filedetails/?id=2995157602) mod
+`VPE Skipdoor Pathing` appends jobs to the pawn's queue to use skipdoors - which has benefit of skipdoor activation animation playing, but has issues when pawns try to do multi-stage jobs like refuelling or hunting, making pawns looping through skipdoors endlessly in some situations. This mod tweaks pathfinding a bit to consider all tiles with skipdoors to be adjacent, so no fancy animations (at least for now) but also no issues with complex jobs.
+## Using this code
+If you set `RimWorldInstallDir` environment variable to point to RimWorld install dir then compiled mod will be installed there, otherwise it will be put into `Source/Mods` dir in the project files.
