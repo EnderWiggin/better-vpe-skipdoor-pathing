@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
 using UnityEngine;
+using VanillaPsycastsExpanded.Skipmaster;
 using Verse;
 using Verse.AI;
 using VFECore;
@@ -35,7 +36,7 @@ public static class PathfindingUtils
         public Area allowedArea;
     }
     
-    private static List<DoorTeleporter> teleporters;
+    private static List<Skipdoor> teleporters;
     private static int octileDistanceFromDestToTeleport = -1;
     private static PathfindingParams pathfindingParams;
     
@@ -47,6 +48,7 @@ public static class PathfindingUtils
         }
 
         teleporters = WorldComponent_DoorTeleporterManager.Instance.DoorTeleporters
+            .OfType<Skipdoor>()
             .Where(x => x is {Spawned: true} && x.Map == map)
             .ToList();
 
