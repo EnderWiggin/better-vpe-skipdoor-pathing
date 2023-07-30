@@ -11,6 +11,7 @@ public class ModEntry : Mod
     public ModEntry(ModContentPack content) : base(content)
     {
         new Harmony(Content.PackageIdPlayerFacing).PatchAll();
+        GetSettings<Settings>();
     }
 
     public override void DoSettingsWindowContents(Rect inRect)
