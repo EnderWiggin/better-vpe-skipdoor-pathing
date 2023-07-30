@@ -115,13 +115,23 @@ public static class PathfindingUtils
             return false;
         }
 
-        return pawn.def.race.intelligence switch
+        var faction = pawn.Faction;
+        var allowed = Settings.Allowed;
+        
+        switch (allowed)
         {
-            Intelligence.Humanlike => true,
-            Intelligence.ToolUser => true,
-            Intelligence.Animal => FollowJobs.Contains(curJobDef) && dest.HasThing,
-            _ => true
-        };
+            case Allowed.Friendlies when faction.HostileTo(Faction.OfPlayer):
+            case Allowed.Colonists when !faction.IsPlayerSafe():
+                return false;
+            default:
+                return pawn.def.race.intelligence switch
+                {
+                    Intelligence.Humanlike => true,
+                    Intelligence.ToolUser => true,
+                    Intelligence.Animal => FollowJobs.Contains(curJobDef) && dest.HasThing,
+                    _ => true
+                };
+        }
     }
 
     public static void TryAddTeleporterNodes(PathFinder pathfinder, IntVec3 start, LocalTargetInfo dest,

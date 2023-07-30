@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+    <BetterVPESkipdoorPathing.Settings>Better VPE Skipdoor Pathing</BetterVPESkipdoorPathing.Settings>
+    <BetterVPESkipdoorPathing.Settings.Allowed>Who can use skipdoors:</BetterVPESkipdoorPathing.Settings.Allowed>
+
+    <BetterVPESkipdoorPathing.Settings.Allowed.Everyone.Name>Everyone</BetterVPESkipdoorPathing.Settings.Allowed.Everyone.Name>
+    <BetterVPESkipdoorPathing.Settings.Allowed.Everyone.Tip>Everyone</BetterVPESkipdoorPathing.Settings.Allowed.Everyone.Tip>
+    <BetterVPESkipdoorPathing.Settings.Allowed.Friendlies.Name>Friendlies</BetterVPESkipdoorPathing.Settings.Allowed.Friendlies.Name>
+    <BetterVPESkipdoorPathing.Settings.Allowed.Friendlies.Tip>Friendlies</BetterVPESkipdoorPathing.Settings.Allowed.Friendlies.Tip>
+    <BetterVPESkipdoorPathing.Settings.Allowed.Colonists.Name>Colonists</BetterVPESkipdoorPathing.Settings.Allowed.Colonists.Name>
+    <BetterVPESkipdoorPathing.Settings.Allowed.Colonists.Tip>Colonists</BetterVPESkipdoorPathing.Settings.Allowed.Colonists.Tip>
+</LanguageData>
