@@ -23,14 +23,14 @@ public class ModEntry : Mod
         MakeAllowedRadioButton(options, Allowed.Friendlies);
         MakeAllowedRadioButton(options, Allowed.Colonists);
         options.End();
-        
+
         base.DoSettingsWindowContents(inRect);
     }
-    
+
     private static void MakeAllowedRadioButton(Listing_Standard opt, Allowed type)
     {
-        if (opt.RadioButton($"BetterVPESkipdoorPathing.Settings.Allowed.{type}.Name".Translate(), 
-                Settings.Allowed == type, 20, 
+        if (opt.RadioButton($"BetterVPESkipdoorPathing.Settings.Allowed.{type}.Name".Translate(),
+                Settings.Allowed == type, 20,
                 $"BetterVPESkipdoorPathing.Settings.Allowed.{type}.Tip".Translate()))
         {
             Settings.Allowed = type;

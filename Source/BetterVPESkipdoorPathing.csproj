@@ -25,13 +25,13 @@
 
 	<Target Name="CopyMod" AfterTargets="Build">
 		<ItemGroup>
-			<AboutModFiles Include="..\About\*.*"/>
-			<LanguageModFiles Include="..\Languages\**\*.*"/>
-			<OtherModFiles Include="..\$(Version)\**\*.*"/>
+			<AboutModFiles Include="..\About\*.*" />
+			<LanguageModFiles Include="..\Languages\**\*.*" />
+			<OtherModFiles Include="..\$(Version)\**\*.*" />
 		</ItemGroup>
-		<Copy SourceFiles="@(AboutModFiles)" DestinationFolder="$(RimWorldInstallDir)\Mods\$(Product)\About\"/>
-		<Copy SourceFiles="@(LanguageModFiles)" DestinationFolder="$(RimWorldInstallDir)\Mods\$(Product)\Languages\%(RecursiveDir)"/>
-		<Copy SourceFiles="@(OtherModFiles)" DestinationFolder="$(RimWorldInstallDir)\Mods\$(Product)\$(Version)\%(RecursiveDir)"/>
+		<Copy SourceFiles="@(AboutModFiles)" DestinationFolder="$(RimWorldInstallDir)\Mods\$(Product)\About\" />
+		<Copy SourceFiles="@(LanguageModFiles)" DestinationFolder="$(RimWorldInstallDir)\Mods\$(Product)\Languages\%(RecursiveDir)" />
+		<Copy SourceFiles="@(OtherModFiles)" DestinationFolder="$(RimWorldInstallDir)\Mods\$(Product)\$(Version)\%(RecursiveDir)" />
 	</Target>
 	
 	<ItemGroup>
