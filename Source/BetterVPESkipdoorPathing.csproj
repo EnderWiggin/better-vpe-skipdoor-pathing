@@ -43,6 +43,10 @@
 			<HintPath>dependencies\VFECore.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
+		<Reference Include="TerrainMovementKit">
+			<HintPath>dependencies\TerrainMovementKit.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
 		<PackageReference Include="Krafs.Publicizer" Version="2.*">
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 			<PrivateAssets>all</PrivateAssets>
@@ -56,5 +60,6 @@
 	</ItemGroup>
 	<ItemGroup>
 		<Publicize Include="Assembly-CSharp" />
+		<Publicize Include="TerrainMovementKit" />
 	</ItemGroup>
 </Project>
