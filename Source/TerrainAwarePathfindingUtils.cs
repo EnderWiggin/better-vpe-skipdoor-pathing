@@ -56,12 +56,17 @@ public static class TerrainAwarePathfindingUtils
         octileDistanceFromDestToTeleport = GetOctileDistanceToClosestTeleport(dest, cardinal, diagonal);
     }
 
-    private static PathfindingParams GetParams(TerrainAwarePathFinder pathfinder, IntVec3 start, LocalTargetInfo dest,
+    private static PathfindingParams GetParams(object pfObj, IntVec3 start, LocalTargetInfo dest,
         TraverseParms traverseParms)
     {
         if (pathfindingParams != null)
         {
             return pathfindingParams;
+        }
+
+        if (pfObj is not TerrainAwarePathFinder pathfinder)
+        {
+            return null;
         }
 
         pathfindingParams = new PathfindingParams
@@ -136,7 +141,7 @@ public static class TerrainAwarePathfindingUtils
         }
     }
 
-    public static void TryAddTeleporterNodes(TerrainAwarePathFinder pathfinder, IntVec3 start, LocalTargetInfo dest,
+    public static void TryAddTeleporterNodes(object pfObj, IntVec3 start, LocalTargetInfo dest,
         TraverseParms traverseParms, PathFinderCostTuning tuning, int curIndex, bool usedRegionHeuristics,
         ref int openedNodes)
     {
@@ -145,18 +150,23 @@ public static class TerrainAwarePathfindingUtils
             return;
         }
 
-        var p = GetParams(pathfinder, start, dest, traverseParms);
+        var p = GetParams(pfObj, start, dest, traverseParms);
 
-        AddTeleporterNodes2(pathfinder, start, dest, traverseParms, tuning, curIndex, usedRegionHeuristics,
+        AddTeleporterNodes2(pfObj, start, dest, traverseParms, tuning, curIndex, usedRegionHeuristics,
             ref openedNodes, p.teleports, p.pawn, p.heuristicStrength, p.ticksPerMoveCardinal, p.ticksPerMoveDiagonal,
             p.avoidGrid, p.allowedArea);
     }
 
-    public static int Heuristics(int dx, int dz, int cardinal, int diagonal, TerrainAwarePathFinder pathfinder,
+    public static int Heuristics(int dx, int dz, int cardinal, int diagonal, object pfObj,
         LocalTargetInfo dest, TraverseParms traverseParms, int cellIndex)
     {
         var octileDistance = GenMath.OctileDistance(dx, dz, cardinal, diagonal);
         if (!CanUseTeleporters(traverseParms.pawn, dest))
+        {
+            return octileDistance;
+        }
+
+        if (pfObj is not TerrainAwarePathFinder pathfinder)
         {
             return octileDistance;
         }
@@ -180,7 +190,7 @@ public static class TerrainAwarePathfindingUtils
             .Min();
     }
 
-    private static void AddTeleporterNodes2(TerrainAwarePathFinder pathfinder, IntVec3 start, LocalTargetInfo dest,
+    private static void AddTeleporterNodes2(object pfObj, IntVec3 start, LocalTargetInfo dest,
         TraverseParms traverseParms, PathFinderCostTuning tuning, int curIndex, bool usedRegionHeuristics,
         ref int openedNodes, List<int> teleports, Pawn pawn,
         float heuristicStrength, int ticksPerMoveCardinal, int ticksPerMoveDiagonal, ByteGrid avoidGrid,
@@ -190,6 +200,7 @@ public static class TerrainAwarePathfindingUtils
         {
             return;
         }
+        var pathfinder = pfObj as TerrainAwarePathFinder;
 
         foreach (var index in teleports)
         {
