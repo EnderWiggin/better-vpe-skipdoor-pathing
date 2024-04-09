@@ -46,18 +46,6 @@
 			<HintPath>dependencies\VFECore.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
-		<Reference Include="RimWorld">
-			<HintPath>$(RimWorldInstallDir)\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="UnityEngine">
-			<HintPath>$(RimWorldInstallDir)\RimWorldWin64_Data\Managed\UnityEngine.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="UnityEngine.CoreModule">
-			<HintPath>$(RimWorldInstallDir)\RimWorldWin64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
 		<PackageReference Include="Krafs.Publicizer" Version="2.*">
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 			<PrivateAssets>all</PrivateAssets>
@@ -67,7 +55,7 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
-<!--		<PackageReference Include="Krafs.Rimworld.Ref" Version="1.5.*-beta" />-->
+		<PackageReference Include="Krafs.Rimworld.Ref" Version="1.5.4060-beta" />
 	</ItemGroup>
 	<ItemGroup>
 		<Publicize Include="Assembly-CSharp" />
