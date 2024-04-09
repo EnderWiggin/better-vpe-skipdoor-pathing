@@ -26,6 +26,11 @@
 		<AssemblyName>BetterVPESkipdoorPathing</AssemblyName>
 		<DefineConstants>TRACE;DEBUG;NETFRAMEWORK;NET48;</DefineConstants>
 	</PropertyGroup>
+	
+	<ItemGroup>
+		<None Include="..\Base\**\*.cs"/>
+		<Compile Include="..\Base\**\*.cs" />
+	</ItemGroup>
 
 	<Target Name="CopyMod" AfterTargets="Build">
 		<ItemGroup>

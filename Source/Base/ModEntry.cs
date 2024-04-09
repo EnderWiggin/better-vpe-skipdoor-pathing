@@ -8,6 +8,9 @@ namespace BetterVPESkipdoorPathing;
 [UsedImplicitly]
 public class ModEntry : Mod
 {
+    private const string PATHING_COST = "BetterVPESkipdoorPathing.Settings.PathingCost";
+    private const string PATHING_COST_TIP = $"{PATHING_COST}.Tip";
+    private const string TILES = $"{PATHING_COST}.Tiles";
     public ModEntry(ModContentPack content) : base(content)
     {
         new Harmony(Content.PackageIdPlayerFacing).PatchAll();
@@ -22,6 +25,9 @@ public class ModEntry : Mod
         MakeAllowedRadioButton(options, Allowed.Everyone);
         MakeAllowedRadioButton(options, Allowed.Friendlies);
         MakeAllowedRadioButton(options, Allowed.Colonists);
+
+        options.Label(PATHING_COST.Translate(), tooltip: PATHING_COST_TIP.Translate());
+        Settings.PathingCost = (int) options.SliderLabeled(TILES.Translate(Settings.PathingCost), Settings.PathingCost, 1, 45);
         options.End();
 
         base.DoSettingsWindowContents(inRect);

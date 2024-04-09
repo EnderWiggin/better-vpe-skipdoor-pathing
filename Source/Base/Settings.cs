@@ -7,10 +7,12 @@ namespace BetterVPESkipdoorPathing;
 public class Settings: ModSettings
 {
     public static Allowed Allowed = Allowed.Everyone;
-    
+    public static int PathingCost = 1;
+
     public override void ExposeData()
     {
         Scribe_Values.Look(ref Allowed, "BetterVPESkipdoorPathing.OnlyColonists", Allowed.Everyone);
+        Scribe_Values.Look(ref PathingCost, "BetterVPESkipdoorPathing.PathingCost", 1);
 
         base.ExposeData();
     }

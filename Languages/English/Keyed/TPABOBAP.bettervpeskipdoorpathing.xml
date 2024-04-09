@@ -9,4 +9,8 @@
     <BetterVPESkipdoorPathing.Settings.Allowed.Friendlies.Tip>Only pawns from non-hostile factions can use skipdoors</BetterVPESkipdoorPathing.Settings.Allowed.Friendlies.Tip>
     <BetterVPESkipdoorPathing.Settings.Allowed.Colonists.Name>Colonists</BetterVPESkipdoorPathing.Settings.Allowed.Colonists.Name>
     <BetterVPESkipdoorPathing.Settings.Allowed.Colonists.Tip>Only your colonists can use skipdoors</BetterVPESkipdoorPathing.Settings.Allowed.Colonists.Tip>
+    
+    <BetterVPESkipdoorPathing.Settings.PathingCost>Skipdoor pathing cost:</BetterVPESkipdoorPathing.Settings.PathingCost>
+    <BetterVPESkipdoorPathing.Settings.PathingCost.Tip>How far apart skipdoors are considered when pathfinding. Higher values mean pawns won't use skipdoors to teleport short distance.</BetterVPESkipdoorPathing.Settings.PathingCost.Tip>
+    <BetterVPESkipdoorPathing.Settings.PathingCost.Tiles>{0} tiles</BetterVPESkipdoorPathing.Settings.PathingCost.Tiles>
 </LanguageData>

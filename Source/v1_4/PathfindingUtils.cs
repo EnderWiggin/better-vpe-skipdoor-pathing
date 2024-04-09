@@ -201,7 +201,7 @@ public static class PathfindingUtils
                 continue;
             }
 
-            var pathCost = ticksPerMoveCardinal;
+            var pathCost = ticksPerMoveCardinal * Settings.PathingCost;
 
             if (avoidGrid != null)
             {
