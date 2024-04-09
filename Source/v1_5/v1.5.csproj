@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<Product>Better VPE Skipdoor Pathing</Product>
+		<AssemblyVersion>1.2.0</AssemblyVersion>
+		<Version>1.5</Version>
+		<Copyright>$([System.DateTime]::Now.ToString('yyyy'))</Copyright>
+		<Company>TPABOBAP</Company>
+		<TargetFramework>net48</TargetFramework>
+		<LangVersion>preview</LangVersion>
+		<ProjectGuid>39D0FA53-77E7-44F5-8A09-D513994A6985</ProjectGuid>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<RootNamespace>BetterVPESKipdoorpathing</RootNamespace>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<OutputPath>$(RimWorldInstallDir)\Mods\$(Product)\$(Version)\Assemblies</OutputPath>
+		<AssemblyName>BetterVPESkipdoorPathing</AssemblyName>
+		<DefineConstants>TRACE;NDEBUG</DefineConstants>
+		<WarningLevel>4</WarningLevel>
+		<DebugSymbols>false</DebugSymbols>
+		<DebugType>None</DebugType>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<OutputPath>$(RimWorldInstallDir)\Mods\$(Product)\$(Version)\Assemblies</OutputPath>
+		<AssemblyName>BetterVPESkipdoorPathing</AssemblyName>
+		<DefineConstants>TRACE;DEBUG;NETFRAMEWORK;NET48;</DefineConstants>
+	</PropertyGroup>
+
+	<Target Name="CopyMod" AfterTargets="Build">
+		<ItemGroup>
+			<AboutModFiles Include="..\..\About\*.*" />
+			<LanguageModFiles Include="..\..\Languages\**\*.*" />
+			<OtherModFiles Include="..\..\$(Version)\**\*.*" />
+		</ItemGroup>
+		<Copy SourceFiles="@(AboutModFiles)" DestinationFolder="$(RimWorldInstallDir)\Mods\$(Product)\About\" />
+		<Copy SourceFiles="@(LanguageModFiles)" DestinationFolder="$(RimWorldInstallDir)\Mods\$(Product)\Languages\%(RecursiveDir)" />
+		<Copy SourceFiles="@(OtherModFiles)" DestinationFolder="$(RimWorldInstallDir)\Mods\$(Product)\$(Version)\%(RecursiveDir)" />
+	</Target>
+	
+	<ItemGroup>
+		<Reference Include="VanillaPsycastsExpanded">
+			<HintPath>dependencies\VanillaPsycastsExpanded.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="VFECore">
+			<HintPath>dependencies\VFECore.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="RimWorld">
+			<HintPath>$(RimWorldInstallDir)\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="UnityEngine">
+			<HintPath>$(RimWorldInstallDir)\RimWorldWin64_Data\Managed\UnityEngine.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="UnityEngine.CoreModule">
+			<HintPath>$(RimWorldInstallDir)\RimWorldWin64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<PackageReference Include="Krafs.Publicizer" Version="2.*">
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+		</PackageReference>
+		<PackageReference Include="Lib.Harmony" Version="2.*" ExcludeAssets="runtime" />
+		<PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net48" Version="1.0.3">
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+		</PackageReference>
+<!--		<PackageReference Include="Krafs.Rimworld.Ref" Version="1.5.*-beta" />-->
+	</ItemGroup>
+	<ItemGroup>
+		<Publicize Include="Assembly-CSharp" />
+		<Publicize Include="TerrainMovementKit" />
+	</ItemGroup>
+</Project>

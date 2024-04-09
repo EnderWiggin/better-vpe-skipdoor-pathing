@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32407.343
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BetterVPESkipdoorPathing", "Source\BetterVPESkipdoorPathing.csproj", "{3CB8A823-52B6-4E96-9A34-4A66DCE56E18}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "v1.4", "Source\v1_4\v1.4.csproj", "{3CB8A823-52B6-4E96-9A34-4A66DCE56E18}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "v1.5", "Source\v1_5\v1.5.csproj", "{39D0FA53-77E7-44F5-8A09-D513994A6985}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{3CB8A823-52B6-4E96-9A34-4A66DCE56E18}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3CB8A823-52B6-4E96-9A34-4A66DCE56E18}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3CB8A823-52B6-4E96-9A34-4A66DCE56E18}.Release|Any CPU.Build.0 = Release|Any CPU
+		{39D0FA53-77E7-44F5-8A09-D513994A6985}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39D0FA53-77E7-44F5-8A09-D513994A6985}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39D0FA53-77E7-44F5-8A09-D513994A6985}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39D0FA53-77E7-44F5-8A09-D513994A6985}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

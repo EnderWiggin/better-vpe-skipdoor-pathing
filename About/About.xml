@@ -5,6 +5,7 @@
 	<packageId>TPABOBAP.bettervpeskipdoorpathing</packageId>
 	<supportedVersions>
 		<li>1.4</li>
+		<li>1.5</li>
 	</supportedVersions>
 	<description>This mod allows pawns to 'use' Skipdoors from Vanilla Psycasts Expanded while moving and doing stuff. They consider all tiles with skipdoors on them to be adjacent for pathing purposes. Only pawns with intellect of Humanlike or ToolUser can use skipdoors freely, but not during mental states or when wandering. Pawns with Animal intellect can use skipdoors only if they are following another pawn (being roped or pet following master). Settings can be changed to allow everyone, friendlies or colonists only to use skipdoors. Note that with default settings enemies can use skipdoors same way your colonists can, so use with caution. Also, for performance reasons if spot is un-reachable without skipdoor pawns won't path to it.</description>
 	<modDependencies>

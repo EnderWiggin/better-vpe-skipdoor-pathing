@@ -10,9 +10,12 @@
 		<LangVersion>preview</LangVersion>
 		<ProjectGuid>3cb8a823-52b6-4e96-9a34-4a66dce56e18</ProjectGuid>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<PackageId>v1.4</PackageId>
+		<RootNamespace>BetterVPESkipdoorPathing</RootNamespace>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<OutputPath>$(RimWorldInstallDir)\Mods\$(Product)\$(Version)\Assemblies</OutputPath>
+		<AssemblyName>BetterVPESkipdoorPathing</AssemblyName>
 		<DefineConstants>TRACE;NDEBUG</DefineConstants>
 		<WarningLevel>4</WarningLevel>
 		<DebugSymbols>false</DebugSymbols>
@@ -20,14 +23,15 @@
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<OutputPath>$(RimWorldInstallDir)\Mods\$(Product)\$(Version)\Assemblies</OutputPath>
+		<AssemblyName>BetterVPESkipdoorPathing</AssemblyName>
 		<DefineConstants>TRACE;DEBUG;NETFRAMEWORK;NET48;</DefineConstants>
 	</PropertyGroup>
 
 	<Target Name="CopyMod" AfterTargets="Build">
 		<ItemGroup>
-			<AboutModFiles Include="..\About\*.*" />
-			<LanguageModFiles Include="..\Languages\**\*.*" />
-			<OtherModFiles Include="..\$(Version)\**\*.*" />
+			<AboutModFiles Include="..\..\About\*.*" />
+			<LanguageModFiles Include="..\..\Languages\**\*.*" />
+			<OtherModFiles Include="..\..\$(Version)\**\*.*" />
 		</ItemGroup>
 		<Copy SourceFiles="@(AboutModFiles)" DestinationFolder="$(RimWorldInstallDir)\Mods\$(Product)\About\" />
 		<Copy SourceFiles="@(LanguageModFiles)" DestinationFolder="$(RimWorldInstallDir)\Mods\$(Product)\Languages\%(RecursiveDir)" />
